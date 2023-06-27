@@ -30,95 +30,25 @@
 
 <?php include("functions/all_queries.php"); ?>
 <?php include("functions/yeni_sorgu.php"); ?>
+<?php include("functions/trendyol_date_item.php"); ?>
+<?php include("functions/trendyol_list_item.php"); ?>
 
 
 <?php
 	ini_set('max_execution_time', 99999900000);
 ?>
 
-<?php		
-
-	function unit_number($site){
-
-		if (preg_match('/\d+(\.\d+)?\s*(adet|Adet|tane|parça|Kapsül|kapsül|Tane|TANE|ADET|Parça|Yıkama|yıkama|Ad.|ad.|li|lı|lü|lu|Paket|paket|PAKET|Yaprak|yaprak|x| x| X|X)/', $site, $matches))    { 
-	 		global $birim_fiyat;
-	 		$birim_fiyat = intval($matches[0]);		 		
-	 		echo 'Adet sayısı: ' . $birim_fiyat . '<br>';
-		}elseif (preg_match('/\s*( x | x|x| X |X| X)+\d(\.\d+)?/', $site, $matches)) {
-			global $birim_fiyat;
-	 		$birim_fiyat = $matches[0];		
-	 		$birim_fiyat = (int) filter_var($birim_fiyat, FILTER_SANITIZE_NUMBER_INT)	;
-	 		echo 'Adet sayısı: ' . $birim_fiyat . '<br>';
-		}else{
-
-			$birim_fiyat = 1;
-		}
-	}
-
-	function preg_match_function($site){
 		
-		if (preg_match('/\d+(\.\d+)?\s*(g |kg|gram|GRAM|GR|gr|kilogram|Gr|KG|G|Kg|ml|Ml|ML|mL|mililitre|Mililitre|MİLİLİTRE|litre|Litre|LİTRE|lt|LT|l |L |Lt)/', $site, $matches)) {
-	 		global $birim_fiyat2;
-	 		$birim_fiyat2 = $matches[0]; // birim fiyat sayısının elde edilmesi
-
-	 		//echo $last_kg_value . '<br>';
-	 		echo 'Birim değeri: ' . $birim_fiyat2. '<br>';
-	 		if(preg_match('/\d+(\.\d+)?\s*(g|gram|GRAM|GR|gr|Gr|G|ml|Ml|ML|mL|mililitre|Mililitre|MİLİLİTRE)/', $birim_fiyat2, $veri)){
-	 			$numbers = $veri[0];
-				$birim_fiyat2 = intval($numbers);
-	 		}else{
-	 			preg_match_all('/\d+/', $birim_fiyat2, $veri);
-
-	 			$numbers = $veri[0];
-				$numbers = $numbers[0];
-				$kg_value = $numbers[0] * 1000;
-				$birim_fiyat2 = $kg_value;
-				echo $birim_fiyat2  . '<br>';
-	 		}
-
-	 	}else{
-	 		$birim_fiyat2 = 1;
-	 	}
-	 }
-	yeni_sorgu("SELECT `market_id`,`item_name`,`item_price`,`healthcare`,`food`,`office`,`cleaning`,`car`,`electronic`,`accessories`,`fashion` FROM `mytable`");
+<?php
 	
-	for ($i=0; $i < sizeof($market_id); $i++) { 
-		echo  $item_name[$i] . '<br>';
-		
-		unit_number($item_name[$i]);
-		preg_match_function($item_name[$i]);
-		$genel = $birim_fiyat * $birim_fiyat2;
-
-		echo 'Genel değer: ' . $genel . '<br>'. '<br>'; 
-		
-		$object = new Obj;
-		$object->market_id = $market_id[$i];
-		$object->item_name = $item_name[$i];
-		$object->item_price = $item_price[$i];
-		$object->unit_number = $genel;
-		$object->healthcare = $healthcare[$i];
-		$object->food = $food[$i];
-		$object->office = $office[$i];
-		$object->cleaning = $cleaning[$i];
-		$object->car = $car[$i];
-		$object->electronic = $electronic[$i];
-		$object->accessories = $accessories[$i];
-		$object->fashion = $fashion[$i];
-		$object->create("son");
-
-		$birim_fiyat = 1;
-		$birim_fiyat2 = 1;
-	
-	}
-
     // -------------------------------- TRENDYOL ÜRÜNLER --------------------------------
 	
 	//SENSODYNE DİŞ MACUNU TRENDYOL
-	/*
-	trendyol_get_item('https://www.trendyol.com/sensodyne-dis-macunu-x-b101761-c101398','span[class="prdct-desc-cntnr-ttl"]', 'span[class="prdct-desc-cntnr-name hasRatings"]','div[class="prc-box-dscntd"]','span[class="ratingCount"]','div[class="unit-info"]','div[class="stmp rd"]','div[class="stmp fc"]','div[class="stmp sds"]','div[class="low-price-in-last-month with-basket"]','span[class="cross-promotion-title"]','span[class="promotion-title"]','span[class="coupon-amount-text"]');
+	
+	//trendyol_get_item('https://www.trendyol.com/sensodyne-dis-macunu-x-b101761-c101398','span[class="prdct-desc-cntnr-ttl"]', 'span[class="prdct-desc-cntnr-name hasRatings"]','div[class="prc-box-dscntd"]','span[class="ratingCount"]','div[class="unit-info"]','div[class="stmp rd"]','div[class="stmp fc"]','div[class="stmp sds"]','div[class="low-price-in-last-month with-basket"]','span[class="cross-promotion-title"]','span[class="promotion-title"]','span[class="coupon-amount-text"]');
 
 	// PINAR SÜT TRENDYOL
-
+	/*
 	trendyol_get_item('https://www.trendyol.com/pinar-sut-x-b148572-c104008?os=1','span[class="prdct-desc-cntnr-ttl"]', 'span[class="prdct-desc-cntnr-name hasRatings"]','div[class="prc-box-dscntd"]','span[class="ratingCount"]','div[class="unit-info"]','div[class="stmp rd"]','div[class="stmp fc"]','div[class="stmp sds"]','div[class="low-price-in-last-month with-basket"]','span[class="cross-promotion-title"]','span[class="promotion-title"]','span[class="coupon-amount-text"]');
 
 	// SELPAK TUVALET KAĞIDI TRENDYOL
@@ -631,155 +561,60 @@
 	// KOMİLİ AYÇİÇEK YAĞI
 
 	a101_get_item('https://www.a101.com.tr/market/sivi-yag/?attributes_integration_brand=2056','h3[class="name"]','span[class="current"]','span[class="badge"]');
-	
-	
-	// echo 'YAYLA PİRİNÇ ÜRÜNÜ A101-TRENDYOL BENZERLİK KARŞILAŞTIRMASI - GÜNCEL FİYAT GÖSTERİMİ'. '<br>'. '<br>';
-	//a101_trendyol($a101_dizi,$trendyol_dizi,$trendyol_item_name);
-	
-	// YAYLA PİRİNÇ ÜRÜNÜ A101-AMAZON BENZERLİK KARŞILAŞTIRMASI - GÜNCEL FİYAT GÖSTERİMİ //
-	// echo 'YAYLA PİRİNÇ ÜRÜNÜ A101-AMAZON BENZERLİK KARŞILAŞTIRMASI - GÜNCEL FİYAT GÖSTERİMİ'. '<br>'. '<br>';
-	//a101_amazon($a101_dizi,$amazon_dizi);
-
-	// YAYLA PİRİNÇ ÜRÜNÜ A101-N11 BENZERLİK KARŞILAŞTIRMASI - GÜNCEL FİYAT GÖSTERİMİ //
-	// echo 'YAYLA PİRİNÇ ÜRÜNÜ A101-N11 BENZERLİK KARŞILAŞTIRMASI - GÜNCEL FİYAT GÖSTERİMİ'. '<br>'. '<br>';
-	//a101_n11($a101_dizi,$n11_dizi);
-	
-	// YAYLA PİRİNÇ ÜRÜNÜ A101-CİCEKSEPETİ BENZERLİK KARŞILAŞTIRMASI - GÜNCEL FİYAT GÖSTERİMİ //
-	// echo 'YAYLA PİRİNÇ ÜRÜNÜ A101-CİCEKSEPETİ BENZERLİK KARŞILAŞTIRMASI - GÜNCEL FİYAT GÖSTERİMİ'. '<br>'. '<br>';
-	// a101_ciceksepeti($a101_dizi,$ciceksepeti_dizi);
-	
-	/*
-	$a101_all_items = array();
-	$a101_all_items = array_merge($a101_item4,$a101_all_items);
-	$a101_all_items = array_merge($a101_item3,$a101_all_items);
-	$a101_all_items = array_merge($a101_item2,$a101_all_items);
-	$a101_all_items = array_merge($a101_item,$a101_all_items);
-
-	$other_all_items = array();
-	$other_all_items = array_merge($ciceksepeti_item,$other_all_items);
-	$other_all_items = array_merge($n11_item,$other_all_items);
-	$other_all_items = array_merge($amazon_item,$other_all_items);
-	$other_all_items = array_merge($trendyol_item,$other_all_items);
-
-	$all_tables = array();
-	$all_tables = array_merge($table_ciceksepeti,$all_tables);
-	$all_tables = array_merge($table_n11,$all_tables);
-	$all_tables = array_merge($table_amazon,$all_tables);
-	$all_tables = array_merge($table_trendyol,$all_tables);
-
-	for ($i=0; $i < sizeof($a101_all_items) ; $i++) {
-		$first_item = $a101_all_items[$i]; 
-		$second_item = $other_all_items[$i]; 
-		$tables = $all_tables[$i]; 
-		$object = new Obj;
-		$object->first_item = $first_item;
-		$object->first_item_tables = 'a101_items';
-		$object->second_item = $second_item;
-		$object->second_item_tables = $tables;
-		//$object->create("match_products");
-	}
 	*/
 
-	// YAYLA PİRİNÇ ÜRÜNÜ TRENDYOL-AMAZON BENZERLİK KARŞILAŞTIRMASI - GÜNCEL FİYAT GÖSTERİMİ //
-	//echo 'YAYLA PİRİNÇ ÜRÜNÜ TRENDYOL-AMAZON BENZERLİK KARŞILAŞTIRMASI - GÜNCEL FİYAT GÖSTERİMİ'. '<br>'. '<br>';
-	//trendyol_amazon($trendyol_dizi,$amazon_dizi,$trendyol_item_name);
 	
-	// YAYLA PİRİNÇ ÜRÜNÜ TRENDYOL-N11 BENZERLİK KARŞILAŞTIRMASI - GÜNCEL FİYAT GÖSTERİMİ //
-	//echo 'YAYLA PİRİNÇ ÜRÜNÜ TRENDYOL-N11 BENZERLİK KARŞILAŞTIRMASI - GÜNCEL FİYAT GÖSTERİMİ'. '<br>'. '<br>';
-	//trendyol_n11($trendyol_dizi,$n11_dizi,$trendyol_item_name);
+	trendyol_name_list_item("SELECT DISTINCT CONCAT (trendyol_item_brand_name,' ',trendyol_item_name) as name FROM `trendyol_items` WHERE `trendyol_item_name` != '0'");
 
-	// YAYLA PİRİNÇ ÜRÜNÜ TRENDYOL-CİCEKSEPETİ BENZERLİK KARŞILAŞTIRMASI - GÜNCEL FİYAT GÖSTERİMİ //
-	//echo 'YAYLA PİRİNÇ ÜRÜNÜ TRENDYOL-CİCEKSEPETİ BENZERLİK KARŞILAŞTIRMASI - GÜNCEL FİYAT GÖSTERİMİ'. '<br>'. '<br>';
-	//trendyol_ciceksepeti($trendyol_dizi,$ciceksepeti_dizi,$trendyol_item_name);
-	/*
-	$trendyol_all_items = array();
-	$trendyol_all_items = array_merge($trendyol_item4,$trendyol_all_items);
-	$trendyol_all_items = array_merge($trendyol_item3,$trendyol_all_items);
-	$trendyol_all_items = array_merge($trendyol_item2,$trendyol_all_items);
-	
-	$other_all_items2 = array();
-	$other_all_items2 = array_merge($ciceksepeti_item2,$other_all_items2);
-	$other_all_items2 = array_merge($n11_item2,$other_all_items2);
-	$other_all_items2 = array_merge($amazon_item2,$other_all_items2);
 
-	$all_tables = array();
-	$all_tables = array_merge($table_ciceksepeti,$all_tables);
-	$all_tables = array_merge($table_n11,$all_tables);
-	$all_tables = array_merge($table_amazon,$all_tables);
+	function preg_match_function($site){
+		$birim_fiyat = 1;
+		global $birim_fiyat;
+		if (preg_match('/\d+(\.\d+)?\s*(g |kg|gram|GRAM|GR |gr|kilogram|KG|G |Kg|ml|Ml|ML|mL|mililitre|Mililitre|MİLİLİTRE|litre|Litre|LİTRE|lt|LT|l |L |Lt)/', $site, $matches) ) {
+	 		if (preg_match('/\d+(\.\d+)?\s*(g |G |gram|GRAM|GR|gr|ml|Ml|ML|mL|mililitre|Mililitre|MİLİLİTRE)/', $site, $matches2)) {
+	 			$birim_fiyat = intval($matches2[0]); 
+	 		}else{
+	 			$birim_fiyat = intval($matches[0]);
 
-	for ($i=0; $i < sizeof($trendyol_all_items) ; $i++) {
-		$first_item = $trendyol_all_items[$i]; 
-		$second_item = $other_all_items2[$i]; 
-		$tables = $all_tables[$i]; 
-		$object = new Obj;
-		$object->first_item = $first_item;
-		$object->first_item_tables = 'trendyol_items';
-		$object->second_item = $second_item;
-		$object->second_item_tables = $tables;
-		//$object->create("match_products");
+	 			$birim_fiyat = $birim_fiyat * 1000;
+	 		}
+	 		
+	 		//echo $birim_fiyat . '<br>';
+		}
 	}
-	*/
-	
-	// YAYLA PİRİNÇ ÜRÜNÜ N11-CİCEKSEPETİ BENZERLİK KARŞILAŞTIRMASI - GÜNCEL FİYAT GÖSTERİMİ //
-	//echo 'YAYLA PİRİNÇ ÜRÜNÜ N11-CİCEKSEPETİ BENZERLİK KARŞILAŞTIRMASI - GÜNCEL FİYAT GÖSTERİMİ'. '<br>'. '<br>';
-	//n11_ciceksepeti($n11_dizi,$ciceksepeti_dizi);
-	/*
-	$n11_all_items = array();
-	$n11_all_items = array_merge($n11_item4,$n11_all_items);
-	
-	$other_all_items4 = array();
-	$other_all_items4 = array_merge($ciceksepeti_item4,$other_all_items4);
-	
-	$all_tables = array();
-	$all_tables = array_merge($table_ciceksepeti,$all_tables);
-	//$all_tables = array_merge($table_n11,$all_tables);
-	//$all_tables = array_merge($table_amazon,$all_tables);
-	//$all_tables = array_merge($table_trendyol,$all_tables);
 
-	for ($i=0; $i < sizeof($n11_all_items) ; $i++) {
-		$first_item = $n11_all_items[$i]; 
-		$second_item = $other_all_items4[$i]; 
-		$tables = $all_tables[$i]; 
-		$object = new Obj;
-		$object->first_item = $first_item;
-		$object->first_item_tables = 'n11_items';
-		$object->second_item = $second_item;
-		$object->second_item_tables = $tables;
-		//$object->create("match_products");
+	function unit_number($site){
+		$unit_number = 1;
+		$pattern1 = '/\d+(\.\d+)?\s*(adet|Adet|tane|parça|paket|Paket|PAKET | x |x| x|Tane|TANE|ADET|Parça|Yıkama|yıkama|kullanım|Kullanım| X | X | X|Ad\.|ad\.|lı|li|lu|lü|Yaprak|yaprak|li|lı|lu|lü|Rulo|rulo)/';
+
+		if (preg_match($pattern1, $site, $matches))
+		{ 
+	 		global $unit_number;
+	 		$unit_number = intval($matches[0]);
+
+	 		//echo 'Adet sayısı: ' . $unit_number . '<br>';
+
+		}
 	}
-	*/
-	// YAYLA PİRİNÇ ÜRÜNÜ N11-AMAZON BENZERLİK KARŞILAŞTIRMASI - GÜNCEL FİYAT GÖSTERİMİ //
-	//echo 'YAYLA PİRİNÇ ÜRÜNÜ N11-AMAZON BENZERLİK KARŞILAŞTIRMASI - GÜNCEL FİYAT GÖSTERİMİ'. '<br>'. '<br>';
-	//amazon_n11($amazon_dizi,$n11_dizi);
 
-	// YAYLA PİRİNÇ ÜRÜNÜ AMAZON-CİCEKSEPETİ BENZERLİK KARŞILAŞTIRMASI - GÜNCEL FİYAT GÖSTERİMİ //
-	//echo 'YAYLA PİRİNÇ ÜRÜNÜ AMAZON-CİCEKSEPETİ BENZERLİK KARŞILAŞTIRMASI - GÜNCEL FİYAT GÖSTERİMİ'. '<br>'. '<br>';
-	//amazon_ciceksepeti($amazon_dizi,$ciceksepeti_dizi);
-	/*
-	$amazon_all_items = array();
-	$amazon_all_items = array_merge($amazon_item3,$amazon_all_items);
-	$amazon_all_items = array_merge($amazon_item4,$amazon_all_items);
-	
-	$other_all_items3 = array();
-	$other_all_items3 = array_merge($n11_item3,$other_all_items3);
-	$other_all_items3 = array_merge($ciceksepeti_item3,$other_all_items3);
+	for ($i=0; $i < sizeof($trendyol_dizi); $i++) { 
+		$sentence = str_replace("&#x27;", "", $trendyol_dizi[$i]);
+		echo $sentence . '<br> ' ;
+		
+		unit_number($sentence);
+		preg_match_function($sentence);
 
-	$all_tables = array();	
-	$all_tables = array_merge($table_n11,$all_tables);	
-	$all_tables = array_merge($table_ciceksepeti,$all_tables);	
-	
-	for ($i=0; $i < sizeof($amazon_all_items) ; $i++) {
-		$first_item = $amazon_all_items[$i]; 
-		$second_item = $other_all_items3[$i]; 
-		$tables = $all_tables[$i]; 
+		$result = $birim_fiyat * $unit_number;
+		echo 'Birim fiyat ' . $birim_fiyat . '<br> ' . ' Unit sayısı: ' . $unit_number . '<br>' . "DEĞER: " . $result . '<br>';
 		$object = new Obj;
-		$object->first_item = $first_item;
-		$object->first_item_tables = 'amazon_items';
-		$object->second_item = $second_item;
-		$object->second_item_tables = $tables;
-		//$object->create("match_products");
+		$object->item_name = $sentence ;
+		$object->unit_number = $result ;
+		$object->create("trendyol_unit_table");
+
+		$unit_number = 1;
+		$birim_fiyat = 1;
+		
 	}
-	*/
 
 
 ?>

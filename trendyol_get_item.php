@@ -1,24 +1,93 @@
 <?php 
 
 	
-	function trendyol_get_item($get_url,$get_item_brand_name,$get_item_name,$get_item_price,$get_item_evaluation_number,$get_piece,$get_quick_delivery,$get_free_cargo,$get_delivery_today,$get_lowest_price_info,$get_birlikte_al_kazan,$get_cok_al_az_ode,$get_coupon_info){
+	function trendyol_get_item($key){
 
-    	$html = file_get_html($get_url);
+		$translationTable = array(
+	    'ı' => 'i',
+	    'ç' => 'c',
+	    'ğ' => 'g',
+	    'ö' => 'o',
+	    'ş' => 's',
+	    'ü' => 'u',
+	    ' ' => '%20'
+		);
+
+		$key = strtr($key, $translationTable);
+		
+
+		$url = "https://www.trendyol.com/sr?q=". $key . '&qt=' .$key .'&st='. $key . '&os=1';
+		
+
+		$get_item_name = 'div[class="prdct-desc-cntnr-ttl-w two-line-text"]';
+		$get_item_price = 'div[class="prc-box-dscntd"]';
+		$get_item_evaluation_number = 'span[class="ratingCount"]';
+
+    	$html = file_get_html($url);
     	$items = $html->find('div[class="p-card-wrppr with-campaign-view add-to-bs-card"]');
+
+    	function preg_match_function_trendyol($site){
+			
+			global $birim_fiyat;
+			$birim_fiyat = 1;
+			if (preg_match('/\d+(\.\d+)?\s*(g|kg|gram|GRAM|GR|Gr|gr|kilogram|KG|G|Kg|ml|Ml|ML|mL|mililitre|Mililitre|MİLİLİTRE|litre|Litre|LİTRE|lt|LT|l |L |Lt)/', $site, $matches) ) {
+
+		 		if (preg_match('/\d+(\.\d+)?\s*(g|G|Gr|gram|GRAM|GR|gr|ml|Ml|ML|mL|mililitre|Mililitre|MİLİLİTRE)/', $site, $matches2)) {
+		 			$birim_fiyat = intval($matches2[0]); 
+		 		}else{
+		 			$birim_fiyat = intval($matches[0]);
+
+		 			$birim_fiyat = $birim_fiyat * 1000;
+		 		}
+			}
+			return $birim_fiyat;
+
+		}
+
+		function unit_number_trendyol($site){
+			global $unit_number;
+			$unit_number = 1;
+			$pattern1 = '/\d+(\.\d+)?\s*(adet|Adet|tane|parça|paket|Paket|PAKET | x |x| x|Tane|TANE|ADET|Parça|Yıkama|yıkama|kullanım|Kullanım| X | X | X|Ad\.|ad\.|lı|li|lu|lü|Yaprak|yaprak| li| lı| lu| lü| Li| Lı| Lu| Lü| Lİ| LI| LU| LÜ|Rulo|rulo|’li|’lı|’lü|’lu)/';
+			$pattern2 = '/\d+(\.\d+)?\s*(x |x| x|X | X | X)\d+(\.\d+)?/';
+
+			if (preg_match($pattern2, $site, $matches))
+			{ 
+		 		global $unit_number;
+
+		 		$string = str_replace([" "],"",strtolower($matches[0]));
+
+		 		$result = explode('x', $string);
+
+		 		$unit_number = intval($result[0]) * intval($result[1]);
+		 		// matches[0] = "6x2"
+		 		//6,2
+		 		//echo 'Adet sayısı: ' . $unit_number . '<br>';
+			}
+			elseif(preg_match($pattern1, $site, $matches)){
+				global $unit_number;
+		 		$unit_number = intval($matches[0]);
+		 		//echo 'Adet sayısı: ' . $unit_number . '<br>';
+			}
+			return $unit_number;
+
+		}
 
     	foreach ($items as $item) {
 
+    		
     		$temp_html=str_get_html($item->outertext);
 
-			$element = $temp_html->getElementsByTagName('a');
+			/*$element = $temp_html->getElementsByTagName('a');
 			$value = $element->getAttribute('href');
-			$value = 'https://www.trendyol.com' . $value;
+			$value = 'https://www.trendyol.com' . $value;*/
 
+			//$category = file_get_html($value); 
+			//$category_item = $category->find('a[class="product-detail-breadcrumb-item"]');
 			
-			$json_value = strrev($value);
-			$json_value = strstr($json_value, '-', true); 
-//
-			$json_value = strrev($json_value);
+			//$json_value = strrev($value);
+			//$json_value = strstr($json_value, '-', true); 
+
+			//$json_value = strrev($json_value);
 
 			//$json_string = 'https://public-mdc.trendyol.com/discovery-web-socialgw-service/api/review/'.$json_value .'?storefrontId=1&culture=tr-TR&pageSize=50&page=0';
 			
@@ -28,45 +97,20 @@
     		//$json = json_decode($json,JSON_PRETTY_PRINT);
     		//$array = $json["result"]["productReviews"]["content"];
     	    		  
-    		$item_brand_name = $temp_html->find($get_item_brand_name);
 			$item_name = $temp_html->find($get_item_name);
 			$item_price = $temp_html->find($get_item_price);	
-			$item_piece = $temp_html->find($get_piece);		
-			$item_review = $temp_html->find($get_item_evaluation_number);
-			$item_quick_delivery = $temp_html->find($get_quick_delivery);
-			$item_free_cargo = $temp_html->find($get_free_cargo);
-			$item_today_cargo = $temp_html->find($get_delivery_today);			
-			$item_lowest_price_info = $temp_html->find($get_lowest_price_info);			
-			$item_birlikte_al_kazan = $temp_html->find($get_birlikte_al_kazan);			
-			$item_cok_al_az_ode = $temp_html->find($get_cok_al_az_ode);			
-			$item_coupon_info= $temp_html->find($get_coupon_info);			
-						
+			$item_review = $temp_html->find($get_item_evaluation_number);		
 
-			$brand_name = $item_brand_name[0]??"0";
-			$brand_name = strip_tags($brand_name);
+
 			$name = $item_name[0]??"0";
 			$name = strip_tags($name);
 			$price = $item_price[0]??"0";
 			$price = strip_tags($price);
-			$piece = $item_piece[0]??"0";
-			$piece = strip_tags($piece);
 			$review = $item_review[0]??"0";
 			$review = strip_tags($review);
-			$quick_delivery = isset($item_quick_delivery[0])? "1" : "0";
-			$quick_delivery = strip_tags($quick_delivery);
-			$free_cargo = isset($item_free_cargo[0])? "1" : "0";
-			$free_cargo = strip_tags($free_cargo);
-			$today_cargo = isset($item_today_cargo[0])? "1" : "0";
-			$today_cargo = strip_tags($today_cargo);
-			$lowest_price = isset($item_lowest_price_info[0])? "1" : "0";
-			$lowest_price = strip_tags($lowest_price);
-			$win_together= isset($item_birlikte_al_kazan[0])? "1" : "0";
-			$win_together = strip_tags($win_together);
-			$buy_more_pay_less= isset($item_cok_al_az_ode[0])? "1" : "0";
-			$buy_more_pay_less = strip_tags($buy_more_pay_less);
-			$coupon_info= isset($item_coupon_info[0])? "1" : "0";
-			$coupon_info = strip_tags($coupon_info);
-
+			$category= $category_item[2]??"0";
+			$category = strip_tags($category);
+			
 			$price_edits = [
 				"." => "",
 				"," => ".",
@@ -84,41 +128,60 @@
 			];
 
 			$price = str_replace(array_keys($price_edits), array_values($price_edits), $price);
-			$piece = str_replace(array_keys($piece_edits), array_values($piece_edits), $piece);
+			$price = doubleval($price);
+			
+
 			$name = str_replace(array_keys($name_edits), array_values($name_edits), $name);
+			$name = str_replace("&#x27;", "", $name);
 
 			$review = str_replace(["(",")"],"",$review);
 
-			echo 'Ürün Adı: ' . ($brand_name) . ' ' .  ($name) . '<br>';
-			echo 'Ürün Fiyatı: ' . ($price) . '<br>';
-			echo 'Ürün Adet Fiyatı: ' . ($piece) . '<br>';
-			echo 'Ürün Değerlendirme Sayısı: ' . ($review) . '<br>';
-			echo 'Ürün Hızlı Teslimat Özelliği: ' .($quick_delivery). '<br>';
-			echo 'Ürün Kargo Bedava Özelliği: ' . ($free_cargo) . '<br>';
-			echo 'Ürün Bugün Kargoda Özelliği: ' . ($today_cargo) . '<br>';
-			echo 'Ürün Son 30 Günün En Düşük Fiyatında mı?: ' . ($lowest_price) . '<br>';
-			echo 'Ürünün Birlikte Al Kazan Kampanyası Var mı: ' . ($win_together) . '<br>';
-			echo 'Ürünün Çok Al Az Öde Kampanyası Var mı: ' . ($buy_more_pay_less) . '<br>';
-			echo 'Ürünün Kupon Kampanyası Var mı: ' . ($coupon_info) . '<br>';
+			$birim_fiyat = preg_match_function_trendyol($name);
+			$unit_number = unit_number_trendyol($name);
+
+			$result = $birim_fiyat * $unit_number;
+
+			if($result!=1){
+				echo $name . ' ' .  $price  . '<br>' . ' '.  $result .  '<br>';
+			}
+			else {
+				echo "HATALI";
+				echo $name . ' ' .  $price  . '<br>' . ' '.  $result .  '<br>';
+			}
+			
+			//echo 'Ürün Adı: ' . ($brand_name) . ' ' .  ($name) . '<br>';
+			//echo 'Ürün Fiyatı: ' . ($price) . '<br>';
+			//echo 'Ürün Adet Fiyatı: ' . ($piece) . '<br>';
+			//echo 'Ürün Değerlendirme Sayısı: ' . ($review) . '<br>';
+			//echo 'Ürün Hızlı Teslimat Özelliği: ' .($quick_delivery). '<br>';
+			//echo 'Ürün Kargo Bedava Özelliği: ' . ($free_cargo) . '<br>';
+			//echo 'Ürün Bugün Kargoda Özelliği: ' . ($today_cargo) . '<br>';
+			//echo 'Ürün Son 30 Günün En Düşük Fiyatında mı?: ' . ($lowest_price) . '<br>';
+			//echo 'Ürünün Birlikte Al Kazan Kampanyası Var mı: ' . ($win_together) . '<br>';
+			//echo 'Ürünün Çok Al Az Öde Kampanyası Var mı: ' . ($buy_more_pay_less) . '<br>';
+			//echo 'Ürünün Kupon Kampanyası Var mı: ' . ($coupon_info) . '<br>';
 			//echo 'Ürün Linki: ' . ($value) . '<br>';
 			//print("<pre>".print_r($json,true)."</pre>");
     		
     		echo "<br>------------------------------------------<br>";
-    		
-			$object = new Obj();
-			$object->trendyol_item_brand_name = $brand_name;
-			$object->trendyol_item_name = $name;
-			$object->trendyol_item_price = $price;
-			$object->trendyol_item_piece_price = $piece;
-			$object->trendyol_item_review = $review;
-			$object->trendyol_item_quick_delivery = $quick_delivery;
-			$object->trendyol_item_free_cargo = $free_cargo;
-			$object->trendyol_item_today_cargo = $today_cargo;
-			$object->trendyol_item_lowest_price = $lowest_price;
-			$object->trendyol_item_win_together = $win_together;
-			$object->trendyol_item_buy_more_pay_less = $buy_more_pay_less;
-			$object->trendyol_item_coupon_info = $coupon_info;
-			$object->create("trendyol_items");
+ 
+
+			$market_id = 4;
+			$null = 0.0;
+			if($result!=1){
+				$object = new Obj();
+				$object->marketid = $market_id;
+				$object->product_name =  $name;
+				$object->product_price = $price;
+				$object->product_price1 = $null;
+				
+				$object->product_price2 = $null;
+				$object->product_price3 = $null;
+				$object->product_price4 = $null;
+				$object->product_price5 = $null;
+				$object->unit_number = $result;
+				//$object->create("product");
+			}
 	}
 }
 ?>

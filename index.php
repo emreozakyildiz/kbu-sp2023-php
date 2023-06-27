@@ -36,7 +36,28 @@
 
 <?php
 	ini_set('max_execution_time', 99999900000);
+
+	$a101_items = a101_list_item("SELECT DISTINCT `product_name` FROM `product` WHERE `marketid` = 3");
+
+	$keywords = ["nutella çikolata", "yayla pirinç"];
+
+	foreach($keywords as $keyword){
+		//echo '-------------------------TRENDYOL---------------------' . '<br>';
+		//trendyol_get_item($keyword);
+		echo '-------------------------A101---------------------' . '<br>';
+		a101_get_item($keyword, $a101_items);
+		//echo '-------------------------N11---------------------' . '<br>';
+		//n11_get_item($keyword);
+		//echo '-------------------------AMAZON---------------------' . '<br>';
+		//amazon_get_item($keyword);
+		//echo '-------------------------ÇİÇEKSEPETİ---------------------' . '<br>';
+		//ciceksepeti_get_item($keyword);
+		exit;
+	}
+	
 ?>
+
+	
 
 		
 <?php
@@ -48,13 +69,13 @@
 	//trendyol_get_item('https://www.trendyol.com/sensodyne-dis-macunu-x-b101761-c101398','span[class="prdct-desc-cntnr-ttl"]', 'span[class="prdct-desc-cntnr-name hasRatings"]','div[class="prc-box-dscntd"]','span[class="ratingCount"]','div[class="unit-info"]','div[class="stmp rd"]','div[class="stmp fc"]','div[class="stmp sds"]','div[class="low-price-in-last-month with-basket"]','span[class="cross-promotion-title"]','span[class="promotion-title"]','span[class="coupon-amount-text"]');
 
 	// PINAR SÜT TRENDYOL
-	/*
-	trendyol_get_item('https://www.trendyol.com/pinar-sut-x-b148572-c104008?os=1','span[class="prdct-desc-cntnr-ttl"]', 'span[class="prdct-desc-cntnr-name hasRatings"]','div[class="prc-box-dscntd"]','span[class="ratingCount"]','div[class="unit-info"]','div[class="stmp rd"]','div[class="stmp fc"]','div[class="stmp sds"]','div[class="low-price-in-last-month with-basket"]','span[class="cross-promotion-title"]','span[class="promotion-title"]','span[class="coupon-amount-text"]');
-
+	
+	//trendyol_get_item('https://www.trendyol.com/pinar-sut-x-b148572-c104008?os=1','span[class="prdct-desc-cntnr-ttl"]', 'span[class="prdct-desc-cntnr-name hasRatings"]','div[class="prc-box-dscntd"]','span[class="ratingCount"]','div[class="unit-info"]','div[class="stmp rd"]','div[class="stmp fc"]','div[class="stmp sds"]','div[class="low-price-in-last-month with-basket"]','span[class="cross-promotion-title"]','span[class="promotion-title"]','span[class="coupon-amount-text"]');
+	
 	// SELPAK TUVALET KAĞIDI TRENDYOL
-
-	trendyol_get_item('https://www.trendyol.com/selpak-tuvalet-kagidi-x-b107797-c104188?os=1','span[class="prdct-desc-cntnr-ttl"]', 'span[class="prdct-desc-cntnr-name hasRatings"]','div[class="prc-box-dscntd"]','span[class="ratingCount"]','div[class="unit-info"]','div[class="stmp rd"]','div[class="stmp fc"]','div[class="stmp sds"]','div[class="low-price-in-last-month with-basket"]','span[class="cross-promotion-title"]','span[class="promotion-title"]','span[class="coupon-amount-text"]');
-
+	
+	//trendyol_get_item('https://www.trendyol.com/selpak-tuvalet-kagidi-x-b107797-c104188?os=1','span[class="prdct-desc-cntnr-ttl"]', 'span[class="prdct-desc-cntnr-name hasRatings"]','div[class="prc-box-dscntd"]','span[class="ratingCount"]','div[class="unit-info"]','div[class="stmp rd"]','div[class="stmp fc"]','div[class="stmp sds"]','div[class="low-price-in-last-month with-basket"]','span[class="cross-promotion-title"]','span[class="promotion-title"]','span[class="coupon-amount-text"]');
+/*
 	// COPIER BOND A4 FOTOKOPİ KAĞIDI TRENDYOL
 
 	trendyol_get_item('https://www.trendyol.com/copierbond-fotokopi-kagidi-x-b110276-c106552?os=1','span[class="prdct-desc-cntnr-ttl"]', 'span[class="prdct-desc-cntnr-name hasRatings"]','div[class="prc-box-dscntd"]','span[class="ratingCount"]','div[class="unit-info"]','div[class="stmp rd"]','div[class="stmp fc"]','div[class="stmp sds"]','div[class="low-price-in-last-month with-basket"]','span[class="cross-promotion-title"]','span[class="promotion-title"]','span[class="coupon-amount-text"]');
@@ -559,62 +580,60 @@
 	a101_get_item('https://www.a101.com.tr/market/sivi-yag/?attributes_integration_brand=3049','h3[class="name"]','span[class="current"]','span[class="badge"]');
 
 	// KOMİLİ AYÇİÇEK YAĞI
-
-	a101_get_item('https://www.a101.com.tr/market/sivi-yag/?attributes_integration_brand=2056','h3[class="name"]','span[class="current"]','span[class="badge"]');
-	*/
+	
 
 	
-	trendyol_name_list_item("SELECT DISTINCT CONCAT (trendyol_item_brand_name,' ',trendyol_item_name) as name FROM `trendyol_items` WHERE `trendyol_item_name` != '0'");
+	
+	
+	trendyol_get_item('https://www.trendyol.com/sensodyne-dis-macunu-x-b101761-c101398','span[class="prdct-desc-cntnr-ttl"]', 'span[class="prdct-desc-cntnr-name hasRatings"]','div[class="prc-box-dscntd"]','span[class="ratingCount"]','div[class="unit-info"]','div[class="stmp rd"]','div[class="stmp fc"]','div[class="stmp sds"]','div[class="low-price-in-last-month with-basket"]','span[class="cross-promotion-title"]','span[class="promotion-title"]','span[class="coupon-amount-text"]');
 
 
-	function preg_match_function($site){
-		$birim_fiyat = 1;
-		global $birim_fiyat;
-		if (preg_match('/\d+(\.\d+)?\s*(g |kg|gram|GRAM|GR |gr|kilogram|KG|G |Kg|ml|Ml|ML|mL|mililitre|Mililitre|MİLİLİTRE|litre|Litre|LİTRE|lt|LT|l |L |Lt)/', $site, $matches) ) {
-	 		if (preg_match('/\d+(\.\d+)?\s*(g |G |gram|GRAM|GR|gr|ml|Ml|ML|mL|mililitre|Mililitre|MİLİLİTRE)/', $site, $matches2)) {
-	 			$birim_fiyat = intval($matches2[0]); 
-	 		}else{
-	 			$birim_fiyat = intval($matches[0]);
+*/
+	ciceksepeti_get_item('https://www.ciceksepeti.com/arama?query=duru%20%20pirin%C3%A7&qt=duru%20%20pirin%C3%A7&choice=2','p[class="products__item-title"]','div[class="price price--now"]','span[class="products-stars__review-count"]');
+	exit;
+	ciceksepeti_get_item('https://www.ciceksepeti.com/domestos-camasir-suyu?qt=domestos%20%C3%A7ama%C5%9F%C4%B1r%20suyu&qcat=kategori-domestos%20%C3%A7ama%C5%9F%C4%B1r%20suyu&suggest=1%7Cdomestos%20%C3%A7a','p[class="products__item-title"]','div[class="price price--now"]','span[class="products-stars__review-count"]');
+	exit;
+	ciceksepeti_get_item('https://www.ciceksepeti.com/arama?query=duru%20%20pirin%C3%A7&qt=duru%20%20pirin%C3%A7&choice=2','p[class="products__item-title"]','div[class="price price--now"]','span[class="products-stars__review-count"]');
 
-	 			$birim_fiyat = $birim_fiyat * 1000;
-	 		}
-	 		
-	 		//echo $birim_fiyat . '<br>';
-		}
-	}
+	exit;
+	ciceksepeti_get_item('https://www.ciceksepeti.com/domestos-camasir-suyu?qt=domestos%20%C3%A7ama%C5%9F%C4%B1r%20suyu&qcat=kategori-domestos%20%C3%A7ama%C5%9F%C4%B1r%20suyu&suggest=1%7Cdomestos%20%C3%A7a','p[class="products__item-title"]','div[class="price price--now"]','span[class="products-stars__review-count"]');
 
-	function unit_number($site){
-		$unit_number = 1;
-		$pattern1 = '/\d+(\.\d+)?\s*(adet|Adet|tane|parça|paket|Paket|PAKET | x |x| x|Tane|TANE|ADET|Parça|Yıkama|yıkama|kullanım|Kullanım| X | X | X|Ad\.|ad\.|lı|li|lu|lü|Yaprak|yaprak|li|lı|lu|lü|Rulo|rulo)/';
+	exit;
+	trendyol_get_item('https://www.trendyol.com/sensodyne-dis-macunu-x-b101761-c101398','span[class="prdct-desc-cntnr-ttl"]', 'span[class="prdct-desc-cntnr-name hasRatings"]','div[class="prc-box-dscntd"]','span[class="ratingCount"]','div[class="unit-info"]','div[class="stmp rd"]','div[class="stmp fc"]','div[class="stmp sds"]','div[class="low-price-in-last-month with-basket"]','span[class="cross-promotion-title"]','span[class="promotion-title"]','span[class="coupon-amount-text"]');
+	
+	ciceksepeti_get_item('https://www.ciceksepeti.com/domestos-camasir-suyu?qt=domestos%20%C3%A7ama%C5%9F%C4%B1r%20suyu&qcat=kategori-domestos%20%C3%A7ama%C5%9F%C4%B1r%20suyu&suggest=1%7Cdomestos%20%C3%A7a','p[class="products__item-title"]','div[class="price price--now"]','span[class="products-stars__review-count"]');
+	
+	exit;
 
-		if (preg_match($pattern1, $site, $matches))
-		{ 
-	 		global $unit_number;
-	 		$unit_number = intval($matches[0]);
+	a101_get_item('https://www.a101.com.tr/market/sivi-yag/?attributes_integration_brand=3049','h3[class="name"]','span[class="current"]','span[class="badge"]');
+	exit;
+	n11_get_item('https://www.n11.com/arama?q=pirin%C3%A7&m=Yayla','h3[class="productName"]','ins','span[class="unitPrice"]','span[class="ratingText"]','span[class="cargoBadgeText"]');
+	exit;
+	amazon_get_item('https://www.amazon.com.tr/s?k=sal%C3%A7a&rh=n%3A21680147031%2Cp_89%3ATat&dc&ds=v1%3AbJ0znChWVHkaD3ZGFMBaw5J%2Fpr7aYRjxzPO%2F7wqmMYU&__mk_tr_TR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=D1B6KOPPSQ15&qid=1673096231&rnid=13493765031&sprefix=sal%C3%A7a%2Caps%2C329&ref=sr_nr_p_89_1','span[class="a-size-base-plus a-color-base a-text-normal"]','span[class="a-offscreen"]','span[class="a-size-base a-color-secondary"]',  'span[class="a-size-base s-underline-text"]','div[class="a-row a-size-base a-color-secondary"]','div[class="a-row a-size-base a-color-secondary s-align-children-center"]','span[class="a-size-small s-variation-options-text s-variations-options-justify-content"]');
 
-	 		//echo 'Adet sayısı: ' . $unit_number . '<br>';
+	exit;
+	ciceksepeti_get_item('https://www.ciceksepeti.com/domestos-camasir-suyu?qt=domestos%20%C3%A7ama%C5%9F%C4%B1r%20suyu&qcat=kategori-domestos%20%C3%A7ama%C5%9F%C4%B1r%20suyu&suggest=1%7Cdomestos%20%C3%A7a','p[class="products__item-title"]','div[class="price price--now"]','span[class="products-stars__review-count"]');
+	
+	
 
-		}
-	}
 
-	for ($i=0; $i < sizeof($trendyol_dizi); $i++) { 
-		$sentence = str_replace("&#x27;", "", $trendyol_dizi[$i]);
-		echo $sentence . '<br> ' ;
-		
-		unit_number($sentence);
-		preg_match_function($sentence);
+	
+	ciceksepeti_get_item('https://www.ciceksepeti.com/domestos-camasir-suyu?qt=domestos%20%C3%A7ama%C5%9F%C4%B1r%20suyu&qcat=kategori-domestos%20%C3%A7ama%C5%9F%C4%B1r%20suyu&suggest=1%7Cdomestos%20%C3%A7a','p[class="products__item-title"]','div[class="price price--now"]','span[class="products-stars__review-count"]');
+	
+trendyol_get_item('https://www.trendyol.com/sensodyne-dis-macunu-x-b101761-c101398','span[class="prdct-desc-cntnr-ttl"]', 'span[class="prdct-desc-cntnr-name hasRatings"]','div[class="prc-box-dscntd"]','span[class="ratingCount"]','div[class="unit-info"]','div[class="stmp rd"]','div[class="stmp fc"]','div[class="stmp sds"]','div[class="low-price-in-last-month with-basket"]','span[class="cross-promotion-title"]','span[class="promotion-title"]','span[class="coupon-amount-text"]');
+	exit;
+	
+	
+	
+	
+	
+	
 
-		$result = $birim_fiyat * $unit_number;
-		echo 'Birim fiyat ' . $birim_fiyat . '<br> ' . ' Unit sayısı: ' . $unit_number . '<br>' . "DEĞER: " . $result . '<br>';
-		$object = new Obj;
-		$object->item_name = $sentence ;
-		$object->unit_number = $result ;
-		$object->create("trendyol_unit_table");
+	
+	
+	n11_get_item('https://www.n11.com/arama?q=pirin%C3%A7&m=Yayla','h3[class="productName"]','ins','span[class="unitPrice"]','span[class="ratingText"]','span[class="cargoBadgeText"]');
+	
 
-		$unit_number = 1;
-		$birim_fiyat = 1;
-		
-	}
 
 
 ?>

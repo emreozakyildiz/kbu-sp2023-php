@@ -1,70 +1,145 @@
 <?php include_once("functions/class.php"); ?>
 <?php 
 	
-	function a101_get_item($get_url,$get_item_name,$get_item_price,$get_options){
+	function a101_get_item($key, $a101_items){
 
-		$context = stream_context_create(
-   			 array(
-       			 "http" => array(
-    			        "header" => "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like 			Gecko) Chrome/50.0.2661.102 Safari/537.36"
-        			)
-    			)
+		$translationTable = array(
+	    'ı' => 'i',
+	    'ç' => 'c',
+	    'ğ' => 'g',
+	    'ö' => 'o',
+	    'ş' => 's',
+	    'ü' => 'u',
+	    ' ' => '+'
 		);
 
+		$key = strtr($key, $translationTable);
+		$url = "https://www.a101.com.tr/list/?search_text=". $key;
 		
-    	$html = file_get_html($get_url,false,$context);
-    	$items = $html->find("[class='col-md-4 col-sm-6 col-xs-6 set-product-item']");
+		
+		$get_item_name = 'h3[class="name"]';
+		$get_item_price = 'span[class="current"]';
 
-    	foreach ($items as $item) {
+		function preg_match_function_a101($site){
+			
+			global $birim_fiyat;
+			$birim_fiyat = 1;
+			if (preg_match('/\d+(\.\d+)?\s*(g|kg|gram|GRAM|GR|Gr|gr|kilogram|KG|G|Kg|ml|Ml|ML|mL|mililitre|Mililitre|MİLİLİTRE|litre|Litre|LİTRE|lt|LT|l|L|Lt)/', $site, $matches) ) {
 
-    		$temp_html=str_get_html($item->outertext);
+		 		if (preg_match('/\d+(\.\d+)?\s*(g|G|gram|GRAM|GR|Gr|gr|ml|Ml|ML|mL|mililitre|Mililitre|MİLİLİTRE)/', $site, $matches2)) {
+		 			$birim_fiyat = intval($matches2[0]); 
+		 		}else{
+		 			$birim_fiyat = intval($matches[0]);
 
-			$item_name = $temp_html->find($get_item_name);
-			$item_price = $temp_html->find($get_item_price);			
-			$item_options = $temp_html->find($get_options);
-
-			$name = $item_name[0]??"İsim Yok";
-			$name = strip_tags($name);
-			$price = $item_price[0]??"Fiyat Yok";
-			$price = strip_tags($price);
-			$options = $item_options[0]??"Bilgi Yok";
-			$options = strip_tags($options);
-
-
-			$price_edits = [
-				"." => "",
-				"," => ".",
-				"₺" => "",
-			];
-			$price = str_replace(array_keys($price_edits), array_values($price_edits), $price);
-
-
-			/*echo 'Ürün Adı: ' . ($name) . '<br>';
-			echo 'Ürün Fiyatı: ' . ($price) . '<br>';
-			echo 'Ürün Satın Alma Seçenekleri: ' . ($options) . '<br>';
-
-    		echo "<br><br>------------------------------------------<br><br>";*/
-
-    		$a101_database_list = new Obj();
-
-    		$a101_database_list->list("select a101_item_name from a101_items where a101_item_name LIKE '%Sensodyne%'");
-
-			if(isset($a101_database_list->list)){
-				foreach ($a101_database_list->list as $a101_database_list) {
-					$array = json_decode( json_encode($a101_database_list), true);
-					//print_r($array['a101_item_name']) .'<br>';
-					//echo '<br>';
-				}
-			}else{
-				echo "Böyle bir ürün bulunamadı" . '<br>';
+		 			$birim_fiyat = $birim_fiyat * 1000;
+		 		}
 			}
+			return $birim_fiyat;
 
-    		$object = new Obj();
-			$object->a101_item_name = $name;
-			$object->a101_item_price = $price;
-			$object->a101_item_options = $options;
-			$object->create("a101_items");
-    	}
+		}
+
+		function unit_number_a101($site){
+			global $unit_number;
+			$unit_number = 1;
+			$pattern1 = '/\d+(\.\d+)?\s*(adet|Adet|tane|parça|paket|Paket|PAKET | x |x| x|Tane|TANE|ADET|Parça|Yıkama|yıkama|kullanım|Kullanım| X | X | X|Ad\.|ad\.|lı|li|lu|lü|Yaprak|yaprak|li|lı|lu|lü|Rulo|rulo)/';
+
+			if (preg_match($pattern1, $site, $matches))
+			{ 
+		 		global $unit_number;
+		 		$unit_number = intval($matches[0]);
+		 		//echo 'Adet sayısı: ' . $unit_number . '<br>';
+			}
+			return $unit_number;
+
+		}
+
+			$context = stream_context_create(
+	   			 array(
+	       			 "http" => array(
+	    			        "header" => "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like 			Gecko) Chrome/50.0.2661.102 Safari/537.36"
+	        			)
+	    			)
+			);
+
+			
+	    	$html = file_get_html($url,false,$context);
+	    	$items = $html->find("[class='col-md-4 col-sm-6 col-xs-6 set-product-item']");
+
+	    	$counter = 0;
+
+	    	foreach ($items as $item) {
+
+	    		
+	    		if($counter > 9){
+	    			return;
+	    		}
+	    		$counter ++;
+	    		$temp_html=str_get_html($item->outertext);
+
+				$item_name = $temp_html->find($get_item_name);
+				$item_price = $temp_html->find($get_item_price);			
+				
+				$name = $item_name[0]??"İsim Yok";
+				$name = strip_tags($name);
+				$name = trim($name);
+				$price = $item_price[0]??"Fiyat Yok";
+				$price = strip_tags($price);
+
+
+				$price_edits = [
+					"." => "",
+					"," => ".",
+					"₺" => "",
+				];
+				$price = str_replace(array_keys($price_edits), array_values($price_edits), $price);
+
+				
+				$birim_fiyat = preg_match_function_a101($name);
+				$unit_number = unit_number_a101($name);
+
+				$result = $birim_fiyat * $unit_number;
+
+				$market_id = 3;
+
+				echo $name . ' ' .  $price. ' '.  $result . '<br>';
+
+				if($result!=1){
+					foreach($a101_items as $a101_item){
+						echo 'Name: ' . $name . '<br>';
+						echo 'A101: ' . $a101_item. '<br>';
+						if($name == $a101_item){
+							echo 'Aynı ürün var';
+							$object = new Obj();
+							$object->marketid = $market_id;
+							$object->product_name = $name;
+							$object->product_price = $price;
+							$object->product_price1 = 0;
+							$object->product_price2 = 0;
+							$object->product_price3 = 0;
+							$object->product_price4 = 0;
+							$object->product_price5 = 0;
+							$object->unit_number = $result;
+							$object->update("product");
+							return;
+
+						}else{
+							echo 'Farklı ürünler';
+						}
+					}
+					$object = new Obj();
+					$object->marketid = $market_id;
+					$object->product_name = $name;
+					$object->product_price = $price;
+					$object->product_price1 = 0;
+					$object->product_price2 = 0;
+					$object->product_price3 = 0;
+					$object->product_price4 = 0;
+					$object->product_price5 = 0;
+					$object->unit_number = $result;
+					//$object->create("product");
+				}
+	    		
+	    	}
 		
 	}
 
